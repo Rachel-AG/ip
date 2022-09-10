@@ -1,6 +1,7 @@
 package duke.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import duke.DukeException;
 
@@ -39,9 +40,9 @@ public class TaskList {
      * Marks the n-th task of the TaskList.
      * If isDone is true, mark the task as done, otherwise mark as not done.
      *
-     * @param n Index of task to-be-marked.
+     * @param n      Index of task to-be-marked.
      * @param isDone Indicates whether task is done or not done.
-     * @throws DukeException If n - 1 is outside the bounds of TaskList' size.
+     * @throws DukeException If n - 1 is outside the bounds of TaskList's size.
      */
     public void markTaskByIndex(int n, boolean isDone) throws DukeException {
         try {
@@ -120,5 +121,41 @@ public class TaskList {
             result.append(taskList.get(i).toStorageString()).append(i == taskList.size() - 1 ? "" : "\n");
         }
         return result.toString();
+    }
+
+    /**
+     * Sorts the current task list by date.
+     *
+     * @param isDescending Boolean value to decide whether to sort ascending or descending.
+     */
+    public void sortByDate(boolean isDescending) {
+        Comparator<Task> byDate = getDateComparator(isDescending);
+        this.taskList.sort(byDate);
+    }
+
+    private Comparator<Task> getDateComparator(boolean isDescending) {
+        return new Comparator<>() {
+            @Override
+            public int compare(Task task1, Task task2) {
+                if (task1 instanceof ToDo) {
+                    return 1;
+                } else if (task2 instanceof ToDo) {
+                    return -1;
+                } else {
+                    int res = handleTaskWithDate(task1, task2);
+                    return isDescending ? res : res * -1;
+                }
+            }
+
+            private int handleTaskWithDate(Task task1, Task task2) {
+                int res = -2;
+                try {
+                    res = task1.getDate().isBefore(task2.getDate()) ? -1 : 1;
+                } catch (DukeException e) {
+                    assert false;
+                }
+                return res;
+            }
+        };
     }
 }

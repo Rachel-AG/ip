@@ -50,6 +50,16 @@ public class Event extends Task {
     }
 
     /**
+     * Gets the date of the event.
+     *
+     * @return The date of the event.
+     */
+    @Override
+    public LocalDate getDate() {
+        return this.at;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

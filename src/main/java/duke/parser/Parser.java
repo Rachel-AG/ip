@@ -4,16 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 import duke.DukeException;
-import duke.command.ByeCommand;
-import duke.command.Command;
-import duke.command.DeadlineCommand;
-import duke.command.DeleteCommand;
-import duke.command.EventCommand;
-import duke.command.FindCommand;
-import duke.command.ListCommand;
-import duke.command.MarkCommand;
-import duke.command.ToDoCommand;
-import duke.command.UnmarkCommand;
+import duke.command.*;
 import duke.task.Deadline;
 import duke.task.Event;
 import duke.task.ToDo;
@@ -37,7 +28,7 @@ public class Parser {
      */
     public Command parse(String input) throws DukeException {
         String[] arg = input.split(" ", 2);
-        String command = arg[0];
+        String command = arg[0].toLowerCase();
         String commandArg = arg.length == 2 ? arg[1].trim() : "";
         switch (command) {
         case "list":
@@ -60,6 +51,9 @@ public class Parser {
         case "event":
             String[] eventArgs = getEventArgs(commandArg);
             return new EventCommand(new Event(eventArgs[0], parseDateArg(eventArgs[1])));
+        case "sort":
+            boolean sortArgs = getSortArg(commandArg);
+            return new SortCommand(sortArgs);
         case "bye":
             checkNoArg(command, commandArg);
             return new ByeCommand();
@@ -100,6 +94,16 @@ public class Parser {
         }
     }
 
+    private boolean getSortArg(String option) throws DukeException {
+        switch (option.toLowerCase()) {
+        case "ascending":
+            return false;
+        case "descending":
+            return true;
+        default:
+            throw new DukeException("Sort must be specified: descending or ascending.");
+        }
+    }
 
     private void trimArgs(String[] args) {
         for (int i = 0; i < args.length; i++) {
